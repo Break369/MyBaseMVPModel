@@ -41,6 +41,7 @@ public class MyApplication extends GlobalApplication {
     public static final String TAG = "com.hanshow.easychain";
     public static String easy = "0.00";
     public static String eth = "0.00";
+    public static Context context;
 
 
 
@@ -50,9 +51,17 @@ public class MyApplication extends GlobalApplication {
         MultiDex.install(base);
     }
 
+    public static Context getContext() {
+        if (context == null) {
+            context = new MyApplication();
+        }
+        return context;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        context = getApplicationContext();
         app = this;
         //初始化屏幕宽高
         getScreenSize();
