@@ -1,0 +1,123 @@
+apply plugin: 'com.android.application'
+
+
+def buildTime() {
+    def date = new Date()
+    def formattedDate = date.format('yyyyMMdd')
+    return formattedDate
+}
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.example.csl.mybasemvpmodel"
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    signingConfigs {
+        debug {
+            keyAlias 'yidialias'
+            keyPassword 'yidi2017'
+            storeFile file('/yidi.jks')
+            storePassword 'yidi2017'
+        }
+        release {
+            keyPassword 'yidi2017'
+            storeFile file('/yidi.jks')
+            storePassword 'yidi2017'
+            keyAlias 'yidialias'
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            //Zipalign优化
+            zipAlignEnabled true
+            signingConfig signingConfigs.release
+            buildConfigField("boolean", "LOG_DEBUG", "true")
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //applicationIdSuffix ".debug"
+            applicationVariants.all { variant ->
+
+                variant.outputs.all {
+                    /*if (output.outputFile != null && output.outputFile.name.endsWith('.apk')
+                            && 'release'.equals(variant.buildType.name)) {
+
+                        output.outputFile = apkFile
+                    }*/
+                    /*def apkFile = new File(
+                            output.outputFile.getParent(),
+                            "EasyChain_${variant.flavorName}_v${variant.versionName}_${buildTime()}.apk")*/
+                    def fileName = "EasyChain_debug_${variant.flavorName}_v${variant.versionName}_${buildTime()}.apk"
+                    outputFileName = fileName
+                }
+            }
+        }
+
+        release {
+            // 不显示Log
+            buildConfigField("boolean", "LOG_DEBUG", "true")
+            //混淆
+            minifyEnabled false
+            //Zipalign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources false
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            applicationVariants.all { variant ->
+
+                variant.outputs.all {
+                    /*if (output.outputFile != null && output.outputFile.name.endsWith('.apk')
+                            && 'release'.equals(variant.buildType.name)) {
+
+                        output.outputFile = apkFile
+                    }*/
+                    /*def apkFile = new File(
+                            output.outputFile.getParent(),
+                            "EasyChain_${variant.flavorName}_v${variant.versionName}_${buildTime()}.apk")*/
+                    def fileName = "EasyChain${variant.flavorName}_v${variant.versionName}_${buildTime()}.apk"
+                    outputFileName = fileName
+                }
+            }
+            /*applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    if (output.outputFile != null && output.outputFile.name.endsWith('.apk')
+                            && 'release'.equals(variant.buildType.name)) {
+                        def apkFile = new File(
+                                output.outputFile.getParent(),
+                                "EasyChain_${variant.flavorName}_v${variant.versionName}_${buildTime()}.apk")
+                        output.outputFile = apkFile
+                    }
+                }
+            }*/
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation project(':sdk')
+}
